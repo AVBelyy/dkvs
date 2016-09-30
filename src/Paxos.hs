@@ -1,32 +1,32 @@
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 
 module Paxos where
 
-import Control.Concurrent (threadDelay)
-import Control.Distributed.Process
-       (Process, ProcessId, exit, getSelfPid, liftIO, match,
-        receiveTimeout, receiveWait, send, spawnLocal)
-import Control.Exception (SomeException(..), catch)
-import Control.Monad (forM_, forever, unless, void, when)
-import Control.Monad.Loops (whileM_)
-import Data.Binary (Binary, decodeFile, encodeFile)
-import Data.Binary.Get (ByteOffset)
-import Data.IORef
-       (IORef, modifyIORef, newIORef, readIORef, writeIORef)
-import Data.Maybe (fromJust, isNothing)
-import Prelude hiding (round)
+import           Control.Concurrent              (threadDelay)
+import           Control.Distributed.Process     (Process, ProcessId, exit, getSelfPid,
+                                                  liftIO, match, receiveTimeout,
+                                                  receiveWait, send, spawnLocal)
+import           Control.Exception               (SomeException (..), catch)
+import           Control.Monad                   (forM_, forever, unless, void, when)
+import           Control.Monad.Loops             (whileM_)
+import           Data.Binary                     (Binary, decodeFile, encodeFile)
+import           Data.Binary.Get                 (ByteOffset)
+import           Data.IORef                      (IORef, modifyIORef, newIORef, readIORef,
+                                                  writeIORef)
+import           Data.Maybe                      (fromJust, isNothing)
+import           Prelude                         hiding (round)
 
 import qualified Control.Distributed.Backend.P2P as P2P
-import qualified Data.Dequeue as Q
-import qualified Data.Map as M
-import qualified Data.Set as S
+import qualified Data.Dequeue                    as Q
+import qualified Data.Map                        as M
+import qualified Data.Set                        as S
 
-import PaxosTypes
-import Types
-import Utils
+import           PaxosTypes
+import           Types
+import           Utils
 
 -- Global constants
 window = 5
@@ -204,7 +204,7 @@ replica nodeId
         \s' ->
              case k `M.lookup` s' of
                  Nothing -> return (Left "not found")
-                 Just v -> return (Right v)
+                 Just v  -> return (Right v)
     mkReply storage (Set k v) = do
         modifyRef storage (M.insert k v)
         return (Right "stored")
@@ -216,8 +216,8 @@ replica nodeId
                  else return (Left "not found")
     mkReply _ Ping = return (Right "pong")
     isLocal (Get _) = True
-    isLocal Ping = True
-    isLocal _ = False
+    isLocal Ping    = True
+    isLocal _       = False
     filename = "dkvs_" ++ show nodeId ++ ".log"
     saveStateOnDisk state' = liftIO $ encodeFile filename state'
     readStateFromDisk =
